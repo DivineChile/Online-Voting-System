@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '../config/supabase.js';
+import { handleSupabaseError } from '../utils/handleSupabaseError.js';
 
 export async function createUser(req, res) {
   try {
@@ -49,9 +50,10 @@ export async function createUser(req, res) {
     });
 
     if (error) {
-      return res.status(400).json({
+      const formattedError = handleSupabaseError(error, 'Failed to create user.');
+      return res.status(formattedError.status).json({
         success: false,
-        message: error.message || 'Failed to create user.',
+        message: formattedError.message,
       });
     }
 

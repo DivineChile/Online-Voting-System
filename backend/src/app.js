@@ -3,6 +3,10 @@ import cors from 'cors';
 import env from './config/env.js';
 import authRoutes from './routes/authRoutes.js';
 import adminUserRoutes from './routes/adminUserRoutes.js';
+import adminElectionRoutes from "./routes/adminElectionRoutes.js"
+import adminPositionRoutes from "./routes/adminPositionRoutes.js"
+import adminCandidateRoutes from "./routes/adminCandidateRoutes.js"
+import adminSetupRoutes from "./routes/adminSetupRoutes.js"
 
 const app = express();
 
@@ -22,5 +26,9 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminUserRoutes);
+app.use('/api/admin', adminElectionRoutes);
+app.use('/api/admin', adminPositionRoutes);
+app.use('/api/admin', adminCandidateRoutes);
+app.use('/api/admin', adminSetupRoutes);
 
 export default app;

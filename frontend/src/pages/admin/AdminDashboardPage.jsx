@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/auth-context';
 
 function AdminDashboardPage() {
@@ -27,6 +27,50 @@ function AdminDashboardPage() {
           >
             Logout
           </button>
+        </div>
+
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link
+            to="/admin/users/create"
+            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
+          >
+            Create User
+          </Link>
+
+          <Link
+            to="/admin/elections/create"
+            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
+          >
+            Create Election
+          </Link>
+
+          <Link
+            to="/admin/elections"
+            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
+          >
+            Manage Elections
+          </Link>
+
+          <Link
+            to="/admin/elections/setup"
+            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
+          >
+            Review Setup
+          </Link>
+
+          <Link
+            to="/admin/positions/create"
+            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
+          >
+            Create Position
+          </Link>
+
+          <Link
+            to="/admin/candidates/create"
+            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
+          >
+            Create Candidate
+          </Link>
         </div>
       </div>
     </div>
