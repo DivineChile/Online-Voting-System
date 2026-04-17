@@ -1,7 +1,29 @@
+# Dependencies
 node_modules/
+
+# Build outputs
 dist/
+build/
+
+# Environment files
 .env
 .env.*
-coverage/
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor / OS files
 .vscode/
+.idea/
 .DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+
+# Vite
+vite.config.js.timestamp-*
