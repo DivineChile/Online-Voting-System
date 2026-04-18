@@ -7,6 +7,9 @@ import adminElectionRoutes from "./routes/adminElectionRoutes.js"
 import adminPositionRoutes from "./routes/adminPositionRoutes.js"
 import adminCandidateRoutes from "./routes/adminCandidateRoutes.js"
 import adminSetupRoutes from "./routes/adminSetupRoutes.js"
+import studentVotingRoutes from "./routes/studentVotingRoutes.js"
+import resultsRoutes from "./routes/resultsRoutes.js"
+import auditLogRoutes from './routes/auditLogRoutes.js';
 
 const app = express();
 
@@ -30,5 +33,8 @@ app.use('/api/admin', adminElectionRoutes);
 app.use('/api/admin', adminPositionRoutes);
 app.use('/api/admin', adminCandidateRoutes);
 app.use('/api/admin', adminSetupRoutes);
+app.use('/api/admin', auditLogRoutes);
+app.use('/api/student', studentVotingRoutes);
+app.use('/api', resultsRoutes);
 
 export default app;

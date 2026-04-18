@@ -1,6 +1,8 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import LoginPage from '../pages/auth/LoginPage';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage';
+import AdminResultsPage from '../pages/admin/AdminResultsPage';
+import AuditLogsPage from '../pages/admin/AuditLogsPage';
 import CreateElectionPage from '../pages/admin/CreateElectionPage';
 import CreatePositionPage from '../pages/admin/CreatePositionPage';
 import CreateCandidatePage from '../pages/admin/CreateCandidatePage';
@@ -8,6 +10,8 @@ import CreateUserPage from '../pages/admin/CreateUserPage';
 import ManageElectionsPage from '../pages/admin/ManageElectionsPage';
 import ReviewElectionSetupPage from '../pages/admin/ReviewElectionSetupPage';
 import StudentDashboardPage from '../pages/student/StudentDashboardPage';
+import StudentResultsPage from '../pages/student/StudentResultsPage';
+import StudentVotingPage from '../pages/student/StudentVotingPage';
 import OfficerDashboardPage from '../pages/officer/OfficerDashboardPage';
 import UnauthorizedPage from '../pages/shared/UnauthorizedPage';
 import ProtectedRoute from './ProtectedRoute';
@@ -78,10 +82,42 @@ export const router = createBrowserRouter([
     ),
   },
   {
+    path: '/admin/results',
+    element: (
+      <ProtectedRoute allowedRoles={['admin']}>
+        <AdminResultsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/audit-logs',
+    element: (
+      <ProtectedRoute allowedRoles={['admin']}>
+        <AuditLogsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: '/student',
     element: (
       <ProtectedRoute allowedRoles={['student']}>
         <StudentDashboardPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/student/vote',
+    element: (
+      <ProtectedRoute allowedRoles={['student']}>
+        <StudentVotingPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/student/results',
+    element: (
+      <ProtectedRoute allowedRoles={['student']}>
+        <StudentResultsPage />
       </ProtectedRoute>
     ),
   },

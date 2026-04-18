@@ -1,5 +1,6 @@
 import { supabaseAdmin } from '../config/supabase.js';
 import { handleSupabaseError } from '../utils/handleSupabaseError.js';
+import { createAuditLog } from '../utils/createAuditLog.js';
 
 export async function createUser(req, res) {
   try {
@@ -56,6 +57,22 @@ export async function createUser(req, res) {
         message: formattedError.message,
       });
     }
+
+    await createAuditLog({
+      actorId: req.profile.id,
+      action: 'create_user',
+      entityType: 'profile',
+      entityId: null,
+      description: `Admin created a new ${role} user account.`,
+      metadata: {
+        auth_user_id: data.user?.id,
+        email: data.user?.email,
+        role,
+        department,
+        matric_no,
+        is_eligible,
+      },
+    });
 
     return res.status(201).json({
       success: true,

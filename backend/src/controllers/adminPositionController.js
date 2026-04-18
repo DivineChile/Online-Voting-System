@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '../config/supabase.js';
+import { createAuditLog } from '../utils/createAuditLog.js';
 import { handleSupabaseError } from '../utils/handleSupabaseError.js';
 
 export async function getElectionsForAdmin(req, res) {
@@ -98,6 +99,20 @@ export async function createPosition(req, res) {
       });
     }
 
+    await createAuditLog({
+    actorId: req.profile.id,
+    action: 'create_position',
+    entityType: 'position',
+    entityId: data.id,
+    description: `Admin created position: ${data.title}`,
+    metadata: {
+        election_id: data.election_id,
+        title: data.title,
+        display_order: data.display_order,
+        max_selections: data.max_selections,
+    },
+    });
+
     return res.status(201).json({
       success: true,
       message: 'Position created successfully.',
@@ -185,6 +200,20 @@ export async function updatePosition(req, res) {
         message: formattedError.message,
       });
     }
+
+    await createAuditLog({
+    actorId: req.profile.id,
+    action: 'update_position',
+    entityType: 'position',
+    entityId: data.id,
+    description: `Admin updated position: ${data.title}`,
+    metadata: {
+        election_id: data.election_id,
+        title: data.title,
+        display_order: data.display_order,
+        max_selections: data.max_selections,
+    },
+    });
 
     return res.status(200).json({
       success: true,

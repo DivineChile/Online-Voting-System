@@ -71,6 +71,20 @@ function AdminDashboardPage() {
           >
             Create Candidate
           </Link>
+
+          <Link
+            to="/admin/results"
+            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
+          >
+            View Results
+          </Link>
+
+          <Link
+            to="/admin/audit-logs"
+            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
+          >
+            Audit Logs
+          </Link>
         </div>
       </div>
     </div>

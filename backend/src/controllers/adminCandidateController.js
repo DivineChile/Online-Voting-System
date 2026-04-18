@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '../config/supabase.js';
+import { createAuditLog } from '../utils/createAuditLog.js';
 import { handleSupabaseError } from '../utils/handleSupabaseError.js';
 
 export async function getPositionsByElection(req, res) {
@@ -105,6 +106,19 @@ export async function createCandidate(req, res) {
       });
     }
 
+    await createAuditLog({
+    actorId: req.profile.id,
+    action: 'create_candidate',
+    entityType: 'candidate',
+    entityId: data.id,
+    description: `Admin created candidate: ${data.full_name}`,
+    metadata: {
+        election_id: data.election_id,
+        position_id: data.position_id,
+        full_name: data.full_name,
+    },
+    });
+
     return res.status(201).json({
       success: true,
       message: 'Candidate created successfully.',
@@ -180,6 +194,19 @@ export async function updateCandidate(req, res) {
       });
     }
 
+    await createAuditLog({
+    actorId: req.profile.id,
+    action: 'update_candidate',
+    entityType: 'candidate',
+    entityId: data.id,
+    description: `Admin updated candidate: ${data.full_name}`,
+    metadata: {
+        election_id: data.election_id,
+        position_id: data.position_id,
+        full_name: data.full_name,
+    },
+    });
+
     return res.status(200).json({
       success: true,
       message: 'Candidate updated successfully.',
@@ -240,6 +267,20 @@ export async function toggleCandidateStatus(req, res) {
         message: formattedError.message,
       });
     }
+
+    await createAuditLog({
+    actorId: req.profile.id,
+    action: is_active ? 'activate_candidate' : 'deactivate_candidate',
+    entityType: 'candidate',
+    entityId: data.id,
+    description: `Admin ${is_active ? 'activated' : 'deactivated'} candidate: ${data.full_name}`,
+    metadata: {
+        election_id: data.election_id,
+        position_id: data.position_id,
+        full_name: data.full_name,
+        is_active: data.is_active,
+    },
+    });
 
     return res.status(200).json({
       success: true,

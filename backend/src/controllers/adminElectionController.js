@@ -1,5 +1,6 @@
 import { supabaseAdmin } from '../config/supabase.js';
 import { handleSupabaseError } from '../utils/handleSupabaseError.js';
+import { createAuditLog } from '../utils/createAuditLog.js';
 
 const ALLOWED_STATUSES = ['draft', 'active', 'closed', 'published'];
 
@@ -92,6 +93,20 @@ export async function createElection(req, res) {
       });
     }
 
+    await createAuditLog({
+        actorId: req.profile.id,
+        action: 'create_election',
+        entityType: 'election',
+        entityId: data.id,
+        description: `Admin created election: ${data.title}`,
+        metadata: {
+            title: data.title,
+            start_time: data.start_time,
+            end_time: data.end_time,
+            status: data.status,
+        },
+    });
+
     return res.status(201).json({
       success: true,
       message: 'Election created successfully.',
@@ -175,6 +190,19 @@ export async function updateElection(req, res) {
       });
     }
 
+    await createAuditLog({
+    actorId: req.profile.id,
+    action: 'update_election',
+    entityType: 'election',
+    entityId: data.id,
+    description: `Admin updated election: ${data.title}`,
+    metadata: {
+        title: data.title,
+        start_time: data.start_time,
+        end_time: data.end_time,
+    },
+    });
+
     return res.status(200).json({
       success: true,
       message: 'Election updated successfully.',
@@ -245,6 +273,19 @@ export async function updateElectionStatus(req, res) {
         message: formattedError.message,
       });
     }
+
+    await createAuditLog({
+    actorId: req.profile.id,
+    action: 'update_election_status',
+    entityType: 'election',
+    entityId: data.id,
+    description: `Admin changed election status to ${data.status}.`,
+    metadata: {
+        election_id: data.id,
+        status: data.status,
+        published_at: data.published_at,
+    },
+    });
 
     return res.status(200).json({
       success: true,

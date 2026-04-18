@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/auth-context';
 
 function StudentDashboardPage() {
@@ -27,6 +27,22 @@ function StudentDashboardPage() {
           >
             Logout
           </button>
+        </div>
+
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link
+            to="/student/vote"
+            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
+          >
+            Vote Now
+          </Link>
+
+          <Link
+            to="/student/results"
+            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
+          >
+            View Results
+          </Link>
         </div>
       </div>
     </div>
