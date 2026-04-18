@@ -1,5 +1,8 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
+// Auth
 import LoginPage from '../pages/auth/LoginPage';
+
+// Admin Routes
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage';
 import AdminResultsPage from '../pages/admin/AdminResultsPage';
 import AuditLogsPage from '../pages/admin/AuditLogsPage';
@@ -9,10 +12,19 @@ import CreateCandidatePage from '../pages/admin/CreateCandidatePage';
 import CreateUserPage from '../pages/admin/CreateUserPage';
 import ManageElectionsPage from '../pages/admin/ManageElectionsPage';
 import ReviewElectionSetupPage from '../pages/admin/ReviewElectionSetupPage';
+
+// Election Officer Routes
+import OfficerDashboardPage from '../pages/officer/OfficerDashboardPage';
+import OfficerActiveElectionPage from '../pages/officer/OfficerActiveElectionPage';
+import OfficerSetupReviewPage from '../pages/officer/OfficerSetupReviewPage';
+import OfficerResultsPage from '../pages/officer/OfficerResultsPage';
+
+// Student Routes
 import StudentDashboardPage from '../pages/student/StudentDashboardPage';
 import StudentResultsPage from '../pages/student/StudentResultsPage';
 import StudentVotingPage from '../pages/student/StudentVotingPage';
-import OfficerDashboardPage from '../pages/officer/OfficerDashboardPage';
+
+// Unauthorized Page
 import UnauthorizedPage from '../pages/shared/UnauthorizedPage';
 import ProtectedRoute from './ProtectedRoute';
 
@@ -98,6 +110,38 @@ export const router = createBrowserRouter([
     ),
   },
   {
+    path: '/officer',
+    element: (
+      <ProtectedRoute allowedRoles={['election_officer']}>
+        <OfficerDashboardPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/officer/election',
+    element: (
+      <ProtectedRoute allowedRoles={['election_officer']}>
+        <OfficerActiveElectionPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/officer/setup',
+    element: (
+      <ProtectedRoute allowedRoles={['election_officer']}>
+        <OfficerSetupReviewPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/officer/results',
+    element: (
+      <ProtectedRoute allowedRoles={['election_officer']}>
+        <OfficerResultsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: '/student',
     element: (
       <ProtectedRoute allowedRoles={['student']}>
@@ -118,14 +162,6 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute allowedRoles={['student']}>
         <StudentResultsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/officer',
-    element: (
-      <ProtectedRoute allowedRoles={['election_officer']}>
-        <OfficerDashboardPage />
       </ProtectedRoute>
     ),
   },
