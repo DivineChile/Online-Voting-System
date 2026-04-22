@@ -1,8 +1,40 @@
 import { supabaseAdmin } from '../config/supabase.js';
 import { handleSupabaseError } from '../utils/handleSupabaseError.js';
 import { createAuditLog } from '../utils/createAuditLog.js';
+import { canModifyElectionStructure, getElectionLockedMessage } from '../utils/electionLifecycle.js';
 
 const ALLOWED_STATUSES = ['draft', 'active', 'closed', 'published'];
+
+function canTransitionElectionStatus(currentStatus, nextStatus) {
+  const allowedTransitions = {
+    draft: ['active'],
+    active: ['closed'],
+    closed: ['published'],
+    published: [],
+  };
+
+  return allowedTransitions[currentStatus]?.includes(nextStatus) || false;
+}
+
+function getStatusTransitionMessage(currentStatus) {
+  if (currentStatus === 'published') {
+    return 'Published elections are locked and their status cannot be changed.';
+  }
+
+  if (currentStatus === 'closed') {
+    return 'Closed elections can only be published.';
+  }
+
+  if (currentStatus === 'active') {
+    return 'Active elections can only be closed.';
+  }
+
+  if (currentStatus === 'draft') {
+    return 'Draft elections can only be activated.';
+  }
+
+  return 'This election status cannot be changed.';
+}
 
 export async function getAdminElections(req, res) {
   try {
@@ -159,7 +191,7 @@ export async function updateElection(req, res) {
 
     const { data: existingElection, error: fetchError } = await supabaseAdmin
       .from('elections')
-      .select('id')
+      .select('id, status')
       .eq('id', electionId)
       .single();
 
@@ -167,6 +199,13 @@ export async function updateElection(req, res) {
       return res.status(404).json({
         success: false,
         message: 'Election not found.',
+      });
+    }
+
+    if (!canModifyElectionStructure(existingElection.status)) {
+      return res.status(409).json({
+        success: false,
+        message: getElectionLockedMessage(existingElection.status),
       });
     }
 
@@ -246,6 +285,20 @@ export async function updateElectionStatus(req, res) {
       return res.status(404).json({
         success: false,
         message: 'Election not found.',
+      });
+    }
+
+    if (existingElection.status === status) {
+      return res.status(400).json({
+        success: false,
+        message: `Election is already in ${status} status.`,
+      });
+    }
+
+    if (!canTransitionElectionStatus(existingElection.status, status)) {
+      return res.status(409).json({
+        success: false,
+        message: getStatusTransitionMessage(existingElection.status),
       });
     }
 

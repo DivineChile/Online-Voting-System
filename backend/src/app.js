@@ -6,6 +6,7 @@ import adminUserRoutes from './routes/adminUserRoutes.js';
 import adminElectionRoutes from "./routes/adminElectionRoutes.js"
 import adminPositionRoutes from "./routes/adminPositionRoutes.js"
 import adminCandidateRoutes from "./routes/adminCandidateRoutes.js"
+import adminDashboardRoutes from './routes/adminDashboardRoutes.js';
 import adminSetupRoutes from "./routes/adminSetupRoutes.js"
 import studentVotingRoutes from "./routes/studentVotingRoutes.js"
 import resultsRoutes from "./routes/resultsRoutes.js"
@@ -30,6 +31,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminUserRoutes);
+app.use('/api/admin', adminDashboardRoutes);
 app.use('/api/admin', adminElectionRoutes);
 app.use('/api/admin', adminPositionRoutes);
 app.use('/api/admin', adminCandidateRoutes);

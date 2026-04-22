@@ -1,6 +1,10 @@
 import { supabaseAdmin } from '../config/supabase.js';
 import { createAuditLog } from '../utils/createAuditLog.js';
 import { handleSupabaseError } from '../utils/handleSupabaseError.js';
+import {
+  canModifyElectionStructure,
+  getElectionLockedMessage,
+} from '../utils/electionLifecycle.js';
 
 export async function getElectionsForAdmin(req, res) {
   try {
@@ -66,7 +70,7 @@ export async function createPosition(req, res) {
 
     const { data: election, error: electionError } = await supabaseAdmin
       .from('elections')
-      .select('id')
+      .select('id, status')
       .eq('id', election_id)
       .single();
 
@@ -74,6 +78,13 @@ export async function createPosition(req, res) {
       return res.status(404).json({
         success: false,
         message: 'Selected election was not found.',
+      });
+    }
+
+    if (!canModifyElectionStructure(election.status)) {
+      return res.status(409).json({
+        success: false,
+        message: getElectionLockedMessage(election.status),
       });
     }
 
@@ -170,7 +181,14 @@ export async function updatePosition(req, res) {
 
     const { data: existingPosition, error: existingError } = await supabaseAdmin
       .from('positions')
-      .select('id')
+      .select(`
+        id,
+        election_id,
+        elections (
+          id,
+          status
+        )
+      `)
       .eq('id', positionId)
       .single();
 
@@ -178,6 +196,15 @@ export async function updatePosition(req, res) {
       return res.status(404).json({
         success: false,
         message: 'Position not found.',
+      });
+    }
+
+    const electionStatus = existingPosition.elections?.status;
+
+    if (!canModifyElectionStructure(electionStatus)) {
+      return res.status(409).json({
+        success: false,
+        message: getElectionLockedMessage(electionStatus),
       });
     }
 

@@ -2,6 +2,11 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 // Auth
 import LoginPage from '../pages/auth/LoginPage';
 
+//Layouts
+import AdminLayout from '../layouts/AdminLayout';
+import StudentLayout from '../layouts/StudentLayout';
+import OfficerLayout from '../layouts/OfficerLayout';
+
 // Admin Routes
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage';
 import AdminResultsPage from '../pages/admin/AdminResultsPage';
@@ -38,133 +43,99 @@ export const router = createBrowserRouter([
     element: <LoginPage />,
   },
   {
-    path: '/admin',
+    path: "/admin",
     element: (
-      <ProtectedRoute allowedRoles={['admin']}>
-        <AdminDashboardPage />
+      <ProtectedRoute allowedRoles={["admin"]}>
+        <AdminLayout />
       </ProtectedRoute>
     ),
+    children: [
+      {
+        index: true,
+        element: <AdminDashboardPage />,
+      },
+      {
+        path: "users/create",
+        element: <CreateUserPage />,
+      },
+      {
+        path: "elections",
+        element: <ManageElectionsPage />,
+      },
+      {
+        path: "elections/create",
+        element: <CreateElectionPage />,
+      },
+      {
+        path: "elections/setup",
+        element: <ReviewElectionSetupPage />,
+      },
+      {
+        path: "positions/create",
+        element: <CreatePositionPage />,
+      },
+      {
+        path: "candidates/create",
+        element: <CreateCandidatePage />,
+      },
+      {
+        path: "results",
+        element: <AdminResultsPage />,
+      },
+      {
+        path: "audit-logs",
+        element: <AuditLogsPage />,
+      },
+    ],
   },
   {
-    path: '/admin/users/create',
-    element: (
-      <ProtectedRoute allowedRoles={['admin']}>
-        <CreateUserPage />
-      </ProtectedRoute>
-    ),
-  },
+  path: '/officer',
+  element: (
+    <ProtectedRoute allowedRoles={['election_officer']}>
+      <OfficerLayout />
+    </ProtectedRoute>
+  ),
+  children: [
+    {
+      index: true,
+      element: <OfficerDashboardPage />,
+    },
+    {
+      path: 'election',
+      element: <OfficerActiveElectionPage />,
+    },
+    {
+      path: 'setup',
+      element: <OfficerSetupReviewPage />,
+    },
+    {
+      path: 'results',
+      element: <OfficerResultsPage />,
+    },
+  ],
+},
   {
-    path: '/admin/elections/create',
-    element: (
-      <ProtectedRoute allowedRoles={['admin']}>
-        <CreateElectionPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/admin/elections/setup',
-    element: (
-      <ProtectedRoute allowedRoles={['admin']}>
-        <ReviewElectionSetupPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/admin/positions/create',
-    element: (
-      <ProtectedRoute allowedRoles={['admin']}>
-        <CreatePositionPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/admin/candidates/create',
-    element: (
-      <ProtectedRoute allowedRoles={['admin']}>
-        <CreateCandidatePage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/admin/elections',
-    element: (
-      <ProtectedRoute allowedRoles={['admin']}>
-        <ManageElectionsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/admin/results',
-    element: (
-      <ProtectedRoute allowedRoles={['admin']}>
-        <AdminResultsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/admin/audit-logs',
-    element: (
-      <ProtectedRoute allowedRoles={['admin']}>
-        <AuditLogsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/officer',
-    element: (
-      <ProtectedRoute allowedRoles={['election_officer']}>
-        <OfficerDashboardPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/officer/election',
-    element: (
-      <ProtectedRoute allowedRoles={['election_officer']}>
-        <OfficerActiveElectionPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/officer/setup',
-    element: (
-      <ProtectedRoute allowedRoles={['election_officer']}>
-        <OfficerSetupReviewPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/officer/results',
-    element: (
-      <ProtectedRoute allowedRoles={['election_officer']}>
-        <OfficerResultsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/student',
-    element: (
-      <ProtectedRoute allowedRoles={['student']}>
-        <StudentDashboardPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/student/vote',
-    element: (
-      <ProtectedRoute allowedRoles={['student']}>
-        <StudentVotingPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/student/results',
-    element: (
-      <ProtectedRoute allowedRoles={['student']}>
-        <StudentResultsPage />
-      </ProtectedRoute>
-    ),
-  },
+  path: '/student',
+  element: (
+    <ProtectedRoute allowedRoles={['student']}>
+      <StudentLayout />
+    </ProtectedRoute>
+  ),
+  children: [
+    {
+      index: true,
+      element: <StudentDashboardPage />,
+    },
+    {
+      path: 'vote',
+      element: <StudentVotingPage />,
+    },
+    {
+      path: 'results',
+      element: <StudentResultsPage />,
+    },
+  ],
+},
   {
     path: '/unauthorized',
     element: <UnauthorizedPage />,

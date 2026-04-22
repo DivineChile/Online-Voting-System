@@ -1,6 +1,10 @@
 import { supabaseAdmin } from '../config/supabase.js';
 import { createAuditLog } from '../utils/createAuditLog.js';
 import { handleSupabaseError } from '../utils/handleSupabaseError.js';
+import {
+  canModifyElectionStructure,
+  getElectionLockedMessage,
+} from '../utils/electionLifecycle.js';
 
 export async function getPositionsByElection(req, res) {
   try {
@@ -62,7 +66,14 @@ export async function createCandidate(req, res) {
 
     const { data: position, error: positionError } = await supabaseAdmin
       .from('positions')
-      .select('id, election_id')
+      .select(`
+        id,
+        election_id,
+        elections (
+          id,
+          status
+        )
+      `)
       .eq('id', position_id)
       .single();
 
@@ -77,6 +88,15 @@ export async function createCandidate(req, res) {
       return res.status(400).json({
         success: false,
         message: 'Selected position does not belong to the selected election.',
+      });
+    }
+
+    const electionStatus = position.elections?.status;
+
+    if (!canModifyElectionStructure(electionStatus)) {
+      return res.status(409).json({
+        success: false,
+        message: getElectionLockedMessage(electionStatus),
       });
     }
 
@@ -161,7 +181,14 @@ export async function updateCandidate(req, res) {
 
     const { data: existingCandidate, error: existingError } = await supabaseAdmin
       .from('candidates')
-      .select('id')
+      .select(`
+        id,
+        election_id,
+        elections (
+          id,
+          status
+        )
+      `)
       .eq('id', candidateId)
       .single();
 
@@ -169,6 +196,15 @@ export async function updateCandidate(req, res) {
       return res.status(404).json({
         success: false,
         message: 'Candidate not found.',
+      });
+    }
+
+    const electionStatus = existingCandidate.elections?.status;
+
+    if (!canModifyElectionStructure(electionStatus)) {
+      return res.status(409).json({
+        success: false,
+        message: getElectionLockedMessage(electionStatus),
       });
     }
 
@@ -242,7 +278,14 @@ export async function toggleCandidateStatus(req, res) {
 
     const { data: existingCandidate, error: existingError } = await supabaseAdmin
       .from('candidates')
-      .select('id')
+      .select(`
+        id,
+        election_id,
+        elections (
+          id,
+          status
+        )
+      `)
       .eq('id', candidateId)
       .single();
 
@@ -250,6 +293,15 @@ export async function toggleCandidateStatus(req, res) {
       return res.status(404).json({
         success: false,
         message: 'Candidate not found.',
+      });
+    }
+
+    const electionStatus = existingCandidate.elections?.status;
+
+    if (!canModifyElectionStructure(electionStatus)) {
+      return res.status(409).json({
+        success: false,
+        message: getElectionLockedMessage(electionStatus),
       });
     }
 

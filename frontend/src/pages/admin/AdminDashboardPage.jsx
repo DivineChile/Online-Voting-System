@@ -1,94 +1,153 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/auth-context';
+import { useEffect, useMemo, useState } from "react";
+import {
+  Users,
+  FileText,
+  Clock,
+  UserCheck,
+  BarChart2,
+  ScrollText,
+  ClipboardCheck,
+  PlusCircle,
+} from "lucide-react";
+import { useAuth } from "../../contexts/auth-context";
+import { fetchAdminDashboardSummary } from "../../api/adminDashboardApi";
+import ElectionOverview from "../../components/common/ElectionOverview";
+import QuickActionCard from "../../components/common/QuickActionCard";
+import StatCards from "../../components/common/StatCards";
 
-function AdminDashboardPage() {
-  const navigate = useNavigate();
-  const { profile, signOut } = useAuth();
+export default function AdminDashboardPage() {
+  const { profile, session } = useAuth();
+  const [dashboardData, setDashboardData] = useState({
+    stats: null,
+    elections_overview: [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  async function handleLogout() {
-    await signOut();
-    navigate('/login', { replace: true });
-  }
+  const quickActions = useMemo(
+    () => [
+      {
+        label: "Create user",
+        desc: "Add student or officer",
+        icon: Users,
+        iconBg: "bg-[#EEEDFE]",
+        iconColor: "text-[#534AB7]",
+        to: "/admin/users/create",
+      },
+      {
+        label: "Create election",
+        desc: "Set up a new election",
+        icon: FileText,
+        iconBg: "bg-[#EEEDFE]",
+        iconColor: "text-[#534AB7]",
+        to: "/admin/elections/create",
+      },
+      {
+        label: "Create position",
+        desc: "Add roles to an election",
+        icon: Clock,
+        iconBg: "bg-[#E1F5EE]",
+        iconColor: "text-[#0F6E56]",
+        to: "/admin/positions/create",
+      },
+      {
+        label: "Add candidate",
+        desc: "Register for a position",
+        icon: UserCheck,
+        iconBg: "bg-[#E1F5EE]",
+        iconColor: "text-[#0F6E56]",
+        to: "/admin/candidates/create",
+      },
+      {
+        label: "Review setup",
+        desc: "Confirm readiness",
+        icon: ClipboardCheck,
+        iconBg: "bg-[#FAECE7]",
+        iconColor: "text-[#993C1D]",
+        to: "/admin/elections/setup",
+      },
+      {
+        label: "View results",
+        desc: "Published outcomes",
+        icon: BarChart2,
+        iconBg: "bg-[#E6F1FB]",
+        iconColor: "text-[#185FA5]",
+        to: "/admin/results",
+      },
+      {
+        label: "Audit logs",
+        desc: "Activity records",
+        icon: ScrollText,
+        iconBg: "bg-[#FAECE7]",
+        iconColor: "text-[#993C1D]",
+        to: "/admin/audit-logs",
+      },
+      {
+        label: "Manage elections",
+        desc: "Edit, open, or close",
+        icon: PlusCircle,
+        iconBg: "bg-[#E6F1FB]",
+        iconColor: "text-[#185FA5]",
+        to: "/admin/elections",
+      },
+    ],
+    []
+  );
+
+  useEffect(() => {
+    async function loadDashboardSummary() {
+      try {
+        setErrorMessage("");
+        const result = await fetchAdminDashboardSummary(session?.access_token);
+        setDashboardData(result.data || { stats: null, elections_overview: [] });
+      } catch (error) {
+        setErrorMessage(error.message || "Failed to load dashboard summary.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (session?.access_token) {
+      loadDashboardSummary();
+    }
+  }, [session]);
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      <div className="max-w-4xl mx-auto rounded-2xl bg-white shadow-md p-8">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Admin Dashboard</h1>
-            <p className="mt-1 text-slate-600">
-              Welcome, {profile?.full_name}.
-            </p>
+    <div className="max-w-6xl">
+      <div className="mb-6">
+        <h1 className="text-[20px] font-medium text-gray-900 mb-1">
+          Welcome back, {profile?.full_name || "Administrator"}
+        </h1>
+        <p className="text-[13px] text-gray-500">
+          Here's a summary of your election platform.
+        </p>
+      </div>
+
+      {errorMessage ? (
+        <div className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {errorMessage}
+        </div>
+      ) : null}
+
+      <StatCards stats={dashboardData.stats} loading={loading} />
+
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-5">
+        <div>
+          <p className="text-[11px] font-medium text-gray-400 tracking-widest uppercase mb-3">
+            Quick actions
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3">
+            {quickActions.map((action) => (
+              <QuickActionCard key={action.label} action={action} />
+            ))}
           </div>
-
-          <button
-            onClick={handleLogout}
-            className="rounded-xl bg-slate-900 px-4 py-2 text-white"
-          >
-            Logout
-          </button>
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link
-            to="/admin/users/create"
-            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
-          >
-            Create User
-          </Link>
-
-          <Link
-            to="/admin/elections/create"
-            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
-          >
-            Create Election
-          </Link>
-
-          <Link
-            to="/admin/elections"
-            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
-          >
-            Manage Elections
-          </Link>
-
-          <Link
-            to="/admin/elections/setup"
-            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
-          >
-            Review Setup
-          </Link>
-
-          <Link
-            to="/admin/positions/create"
-            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
-          >
-            Create Position
-          </Link>
-
-          <Link
-            to="/admin/candidates/create"
-            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
-          >
-            Create Candidate
-          </Link>
-
-          <Link
-            to="/admin/results"
-            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
-          >
-            View Results
-          </Link>
-
-          <Link
-            to="/admin/audit-logs"
-            className="inline-flex rounded-xl bg-slate-100 px-4 py-3 text-slate-900 font-medium hover:bg-slate-200 transition"
-          >
-            Audit Logs
-          </Link>
-        </div>
+        <ElectionOverview
+          elections={dashboardData.elections_overview || []}
+          loading={loading}
+        />
       </div>
     </div>
   );
 }
-
-export default AdminDashboardPage;
