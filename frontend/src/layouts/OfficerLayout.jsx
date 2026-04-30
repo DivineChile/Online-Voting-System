@@ -34,7 +34,7 @@ function Sidebar({ officer, onNavigate }) {
         </div>
         <div>
           <p className="text-[13px] font-medium text-[#EEEDFE] leading-tight">
-            CampusVoice
+            Student Voting System
           </p>
           <p className="text-[10px] text-white/35">Officer portal</p>
         </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck, Vote } from "lucide-react";
 import { useAuth } from "../../contexts/auth-context";
 
 export default function LoginPage() {
@@ -66,11 +66,11 @@ export default function LoginPage() {
           <div>
             <div className="flex items-center gap-3 mb-8">
               <div className="w-9 h-9 bg-[#534AB7] rounded-lg flex items-center justify-center flex-shrink-0">
-                <ShieldCheck size={18} color="#EEEDFE" strokeWidth={1.5} />
+                <Vote size={18} color="#EEEDFE" strokeWidth={1.5} />
               </div>
               <div>
                 <p className="text-[#EEEDFE] text-sm font-medium leading-tight">
-                  CampusVoice
+                  Student Voting System
                 </p>
                 <p className="text-white/40 text-[11px] tracking-wide">
                   Election Portal
