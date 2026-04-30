@@ -46,24 +46,22 @@ export async function getOfficerDashboardSummary(req, res) {
   try {
     const now = new Date().toISOString();
 
-    const { data: activeElection, error: electionError } = await supabaseAdmin
-      .from('elections')
-      .select(`
-        id,
-        title,
-        description,
-        status,
-        start_time,
-        end_time,
-        published_at,
-        created_at
-      `)
-      .eq('status', 'active')
-      .lte('start_time', now)
-      .gte('end_time', now)
-      .order('start_time', { ascending: true })
-      .limit(1)
-      .maybeSingle();
+      const { data: activeElection, error: electionError } = await supabaseAdmin
+    .from('elections')
+    .select(`
+      id,
+      title,
+      description,
+      status,
+      start_time,
+      end_time,
+      published_at,
+      created_at
+    `)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
     if (electionError) {
       const formattedError = handleSupabaseError(
@@ -109,9 +107,7 @@ export async function getOfficerActiveElection(req, res) {
         created_at
       `)
       .eq('status', 'active')
-      .lte('start_time', now)
-      .gte('end_time', now)
-      .order('start_time', { ascending: true })
+      .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
 
